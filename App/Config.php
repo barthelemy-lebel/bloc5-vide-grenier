@@ -9,6 +9,7 @@ namespace App;
  */
 class Config
 {
+    
 
     /**
      * Database host

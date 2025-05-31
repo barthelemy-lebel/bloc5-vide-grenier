@@ -3,7 +3,7 @@ services:
     build: .
     container_name: videgrenier-web
     ports:
-      - "8080:80"
+      - "${WEB_PORT}:80"
     volumes:
       - .:/var/www/html
     depends_on:
@@ -14,10 +14,10 @@ services:
     container_name: videgrenier-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: videgrenierenligne
-      MYSQL_USER: webapplication
-      MYSQL_PASSWORD: 653rag9T
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
@@ -32,10 +32,10 @@ services:
       - db
     environment:
       PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8081:80"
+      - "${PHPMYADMIN_PORT}:80"
 
 volumes:
   db_data:
