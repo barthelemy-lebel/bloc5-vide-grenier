@@ -70,16 +70,16 @@
         }
 
         function renderProduct($product){
-             $('<div class="col-lg-4 col-sm-6 articleitem" id="article-pattern">' +
+             $('<div class="col-lg-4 col-sm-6 articleitem">' +
                 '                                <div class="b-article">' +
                 '                                    <div class="v-img">' +
                 '                                        <a href="/product/'+ $product.id + '">' +
-                '                                            <img src="/storage/'+ $product.picture +'" alt=""></a>' +
+                '                                            <img src="/storage/'+ $product.picture +'" alt="" class="img-fluid"></a>' +
                 '                                    </div>' +
                 '                                    <div class="v-desc">' +
                 '                                        <a href="/product/'+ $product.id + '">'+ $product.name+'</a>' +
                 '                                    </div>' +
-                '                                    <p>'+ $product.description.slice(0, 20) + '...</p>' +
+                '                                    <p>'+ $product.description.split(" ").slice(0, 6).join(" ") + '...</p>' +
                 '                                    <div class="v-views">' +
                 '                                        '+$product.views+' vues' +
                 '                                    </div>' +
