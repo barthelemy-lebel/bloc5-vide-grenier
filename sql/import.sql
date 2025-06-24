@@ -7,6 +7,7 @@
 -- Server version: 5.7.26
 -- PHP Version: 7.4.2
 
+SET NAMES 'utf8mb4';
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -21,13 +22,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `articles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `description` text NOT NULL,
-  `published_date` date DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
-  `views` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  `picture` varchar(200) DEFAULT NULL
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(200) NOT NULL,
+  `description` TEXT NOT NULL,
+  `published_date` DATE DEFAULT NULL,
+  `user_id` INT(11) NOT NULL,
+  `views` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `picture` VARCHAR(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -74,21 +76,18 @@ INSERT INTO `articles` (`id`, `name`, `description`, `published_date`, `user_id`
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(254) NOT NULL,
-  `password` text NOT NULL,
-  `salt` text NOT NULL,
-  `is_admin` tinyint(4) NOT NULL DEFAULT '0'
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(254) NOT NULL,
+  `password` TEXT NOT NULL,
+  `salt` TEXT NOT NULL,
+  `remember_token` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `salt`, `is_admin`) VALUES
-(1, 'John Doe', 'john.doe@gmail.com', '', '', 0),
-(3, 'Azerty', 'admin@admin.fr', 'e27f4a0e6addcaacbfc1322fbc8543fb3f696b228af9e08ac9595cdd70ce0134', ':d>BK\\ta]3-0=jM<g1=:=!\'<ykeP_@M;', 0);
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `salt`, `remember_token`) VALUES
+(1, 'John Doe', 'john.doe@gmail.com', '', '', NULL),
+(3, 'Azerty', 'admin@admin.fr', 'e27f4a0e6addcaacbfc1322fbc8543fb3f696b228af9e08ac9595cdd70ce0134', ':d>BK\\ta]3-0=jM<g1=:=!\'<ykeP_@M;', NULL);
 
 -- --------------------------------------------------------
 
