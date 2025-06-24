@@ -12,6 +12,12 @@ use \Core\View;
 class Product extends \Core\Controller
 {
 
+    protected function sendMail($to, $subject, $message, $headers)
+    {
+        return mail($to, $subject, $message, $headers);
+    }
+
+
     /**
      * Affiche la page d'ajout
      * @return void
@@ -81,7 +87,8 @@ public function indexAction()
                 $headers .= "Reply-To: contact@votresite.fr\r\n";
                 $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
-                mail($to, $subject, $message, $headers);
+                $this->sendMail($to, $subject, $message, $headers);
+
 
                 $success = "Votre message a bien été envoyé à " . htmlspecialchars($article['username']);
             } else {
