@@ -16,31 +16,45 @@ class Product extends \Core\Controller
      * Affiche la page d'ajout
      * @return void
      */
-    public function indexAction()
-    {
+public function indexAction()
+{
+    $error = null;
 
-        if(isset($_POST['submit'])) {
+    if (isset($_POST['submit'])) {
+        try {
+            $f = $_POST;
 
-            try {
-                $f = $_POST;
-
-                // TODO: Validation
-
-                $f['user_id'] = $_SESSION['user']['id'];
-                $id = Articles::save($f);
-
-                $pictureName = Upload::uploadFile($_FILES['picture'], $id);
-
-                Articles::attachPicture($id, $pictureName);
-
-                header('Location: /product/' . $id);
-            } catch (\Exception $e){
-                    var_dump($e);
+            // Vérifie que l'image a bien été envoyée
+            if (empty($_FILES['picture']['name'])) {
+                throw new \Exception("L'image est obligatoire.");
             }
-        }
 
-        View::renderTemplate('Product/Add.html');
+            // Récupère l'utilisateur connecté
+            $f['user_id'] = $_SESSION['user']['id'];
+
+            // Enregistre l'article
+            $id = Articles::save($f);
+
+            // Upload de l'image
+            $pictureName = Upload::uploadFile($_FILES['picture'], $id);
+            Articles::attachPicture($id, $pictureName);
+
+            // Redirection vers la page de l'annonce
+            header('Location: /product/' . $id);
+            exit;
+
+        } catch (\Exception $e) {
+            // Capture propre de l'erreur
+            $error = $e->getMessage();
+        }
     }
+
+    // Affichage du formulaire avec ou sans erreur
+    View::renderTemplate('Product/Add.html', [
+        'error' => $error
+    ]);
+}
+
 
     /**
      * Affiche la page d'un produit

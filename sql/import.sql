@@ -22,13 +22,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `articles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `description` text NOT NULL,
-  `published_date` date DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
-  `views` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  `picture` varchar(200) DEFAULT NULL
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(200) NOT NULL,
+  `description` TEXT NOT NULL,
+  `published_date` DATE DEFAULT NULL,
+  `user_id` INT(11) NOT NULL,
+  `views` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `picture` VARCHAR(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
