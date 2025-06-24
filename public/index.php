@@ -9,6 +9,23 @@
 session_start();
 
 /**
+ * Vérifie si l'utilisateur a un cookie "remember me"
+ */
+if (!isset($_SESSION['user']) && isset($_COOKIE['remember_me'])) {
+    require_once dirname(__DIR__) . '/App/Models/User.php';
+
+    $token = $_COOKIE['remember_me'];
+    $user = \App\Models\User::getByRememberToken($token);
+
+    if ($user) {
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'username' => $user['username'],
+        ];
+    }
+}
+
+/**
  * Composer
  */
 require dirname(__DIR__) . '/vendor/autoload.php';
