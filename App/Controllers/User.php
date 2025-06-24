@@ -59,7 +59,17 @@ class User extends \Core\Controller
                         "password" => $passwordHashed,
                         "salt" => $salt
                     ]);
-                    header('Location: /login');
+                    
+                    // Récupère l'utilisateur pour le connecter
+                    $user = UserModel::getByLogin($f['email']);
+                    
+                    $_SESSION['user'] = [
+                        'id' => $user['id'],
+                        'username' => $user['username']
+                    ];
+                    
+                    // Redirige directement vers le compte
+                    header('Location: /account');
                     exit;
                 } catch (Exception $e) {
                     $error = "Erreur lors de l'inscription.";
