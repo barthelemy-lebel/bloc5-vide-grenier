@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\User as UserModel;
 use App\Config;
 use App\Model\UserRegister;
 use App\Models\Articles;
@@ -15,16 +16,15 @@ use http\Exception\InvalidArgumentException;
 class User extends \Core\Controller
 {
     /**
-     * ✅ Affiche la page de connexion et traite la soumission
+     * Affiche la page de connexion et traite le login
      */
     public function loginAction()
     {
-        $error = false; // Stocke une erreur éventuelle
+        $error = false;
 
         if (isset($_POST['submit'])) {
             $f = $_POST;
 
-            // ✅ Tente la connexion
             if ($this->login($f)) {
                 header('Location: /account');
                 exit;
@@ -33,92 +33,68 @@ class User extends \Core\Controller
             }
         }
 
-        // ✅ Passe l'erreur (s'il y en a) à la vue Twig
         View::renderTemplate('User/login.html', ['error' => $error]);
     }
 
     /**
-     * ✅ Affiche la page d'inscription
+     * Affiche la page d'inscription et traite l'enregistrement
      */
     public function registerAction()
     {
+        $error = false;
+
         if (isset($_POST['submit'])) {
             $f = $_POST;
 
             if ($f['password'] !== $f['password-check']) {
-                // TODO : gérer l'affichage d'une erreur utilisateur
-            }
+                $error = "Les mots de passe ne correspondent pas.";
+            } else {
+                $salt = Hash::generateSalt(32);
+                $passwordHashed = Hash::generate($f['password'], $salt);
 
-            $this->register($f);
-            // TODO : appeler login() pour connecter directement
+                try {
+                    $id = UserModel::createUser([
+                        "email" => $f['email'],
+                        "username" => $f['username'],
+                        "password" => $passwordHashed,
+                        "salt" => $salt
+                    ]);
+                    header('Location: /login');
+                    exit;
+                } catch (Exception $e) {
+                    $error = "Erreur lors de l'inscription.";
+                }
+            }
         }
 
-        View::renderTemplate('User/register.html');
+        View::renderTemplate('User/register.html', ['error' => $error]);
     }
 
     /**
-     * ✅ Page du compte utilisateur
+     * Affiche la page de compte (nécessite session active)
      */
     public function accountAction()
     {
-        $articles = Articles::getByUser($_SESSION['user']['id']);
+        if (!isset($_SESSION['user'])) {
+            header('Location: /login');
+            exit;
+        }
 
         View::renderTemplate('User/account.html', [
-            'articles' => $articles
+            'username' => $_SESSION['user']['username']
         ]);
     }
 
     /**
-     * ✅ Méthode privée d’enregistrement d’un nouvel utilisateur
-     */
-    private function register($data)
-    {
-        try {
-            $salt = Hash::generateSalt(32);
-
-            \App\Models\User::createUser([
-                "email" => $data['email'],
-                "username" => $data['username'],
-                "password" => Hash::generate($data['password'], $salt),
-                "salt" => $salt
-            ]);
-        } catch (Exception $ex) {
-            // TODO : gestion d'erreur
-        }
-    }
-
-    /**
-     * ✅ Méthode privée de connexion
-     */
-    private function login($data)
-    {
-        try {
-            if (!isset($data['email']) || !isset($data['password'])) {
-                throw new Exception("Champs manquants");
-            }
-
-            $user = \App\Models\User::getByLogin($data['email']);
-
-            if (!$user || Hash::generate($data['password'], $user['salt']) !== $user['password']) {
-                return false; // Mauvais mot de passe ou utilisateur non trouvé
-            }
-
-            $_SESSION['user'] = [
-                'id' => $user['id'],
-                'username' => $user['username'],
-            ];
-
-            return true;
-        } catch (Exception $ex) {
-            return false;
-        }
-    }
-
-    /**
-     * ✅ Déconnexion de l'utilisateur
+     * Déconnecte l'utilisateur et supprime les données
      */
     public function logoutAction()
     {
+        if (isset($_COOKIE['remember_me'])) {
+            UserModel::storeRememberToken($_SESSION['user']['id'], null);
+            setcookie('remember_me', '', time() - 3600, "/");
+        }
+
         $_SESSION = [];
 
         if (ini_get("session.use_cookies")) {
@@ -130,7 +106,47 @@ class User extends \Core\Controller
         }
 
         session_destroy();
-        header("Location: /");
-        return true;
+        header("Location: /login");
+        exit;
+    }
+
+    /**
+     * Méthode privée : connecte l'utilisateur et gère "se souvenir de moi"
+     */
+    private function login($data)
+    {
+        try {
+            if (empty($data['email']) || empty($data['password'])) {
+                throw new Exception("Champs requis manquants");
+            }
+
+            $user = UserModel::getByLogin($data['email']);
+
+            if (!$user) {
+                return false;
+            }
+
+            $hashedInput = Hash::generate($data['password'], $user['salt']);
+
+            if ($hashedInput !== $user['password']) {
+                return false;
+            }
+
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'username' => $user['username'],
+            ];
+
+            // Se souvenir de moi
+            if (!empty($data['remember_me'])) {
+                $token = bin2hex(random_bytes(32));
+                UserModel::storeRememberToken($user['id'], $token);
+                setcookie('remember_me', $token, time() + (30 * 24 * 60 * 60), "/", "", false, true);
+            }
+
+            return true;
+        } catch (Exception $ex) {
+            return false;
+        }
     }
 }

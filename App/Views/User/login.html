@@ -3,70 +3,46 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<div class="container-fluid bg-image">
-    <div class="row">
-        <div class="login-wraper">
-            <div class="hidden-xs">
-                <img src="images/login.jpg" alt="">
-            </div>
-            <div class="banner-text hidden-xs">
-                <div class="line"></div>
-                <div class="b-text">
-                    Des <span class="color-active">centaines<br> </span> <span class="color-b1">d'articles vous
-                </span>attendent
-                </div>
-            </div>
-            <div class="login-window">
-                <div class="l-head">
-                    Connexion
-                </div>
-                <div class="l-form">
-                    
-                    <!-- Message d'erreur -->
-                    {% if error %}
-                        <div class="alert alert-danger">
-                            {{ error }}
-                        </div>
-                    {% endif %}
-
-                    <form action="" method="post">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                   placeholder="sample@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" class="form-control" id="password"
-                                   name="password" placeholder="**********">
-                        </div>
-                        <div class="checkbox">
-                            <label class="checkbox">
-                                <input type="checkbox" name="remember_me">
-                                <span class="arrow"></span>
-                                Se souvenir de moi
-                            </label>
-                            <span class="text2">(non recommandé sur un ordinateur partagé)</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-7">
-                                <button type="submit" name="submit" class="btn btn-cv1">Connexion</button>
-                            </div>
-                            <div class="hidden-xs">
-                                <div class="col-lg-1 ortext">ou</div>
-                                <div class="col-lg-4 signuptext"><a href="/register">Inscription</a></div>
-                            </div>
-                        </div>
-                        <div class="row hidden-xs">
-                            <div class="col-lg-12 forgottext">
-                                <a href="#">Mot de passe oublié ?</a>
-                            </div>
-                        </div>
-                    </form>
-
-                </div>
-            </div>
+<div class="container-fluid bg-light py-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        
+        <!-- Partie gauche (image + texte d'accroche) -->
+        <div class="col-lg-6 d-none d-lg-block text-center">
+            <h2 class="display-4 text-danger font-weight-bold">Des <span class="text-dark">centaines</span><br><span class="text-dark">d'articles vous attendent</span></h2>
         </div>
+
+        <!-- Partie droite (formulaire) -->
+        <div class="col-lg-4 col-md-8 col-sm-10 bg-white p-4 shadow rounded">
+            <h3 class="mb-4">Connexion</h3>
+            <form method="post">
+                <div class="form-group">
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="exemple@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="********" required>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember_me">
+                    <label class="form-check-label" for="remember">Se souvenir de moi</label>
+                </div>
+
+                <button type="submit" class="btn btn-danger btn-block">Connexion</button>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted">Pas encore inscrit ?</span>
+                    <a href="/register" class="ml-1">Créer un compte</a>
+                </div>
+
+                <div class="text-center mt-2">
+                    <a href="/forgot-password" class="small">Mot de passe oublié ?</a>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 {% endblock %}

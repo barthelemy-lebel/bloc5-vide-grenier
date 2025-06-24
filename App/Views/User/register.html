@@ -3,63 +3,52 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-<div class="container-fluid bg-image">
-    <div class="row">
-        <div class="login-wraper">
-            <div class="hidden-xs">
-                <img src="images/login.jpg" alt="">
-            </div>
-            <div class="banner-text hidden-xs">
-                <div class="line"></div>
-                <div class="b-text">
-                    Des <span class="color-active">centaines<br> </span> <span class="color-b1">d'articles vous
-                </span>attendent
-                </div>
-                <div class="overtext">
-                    Plus de 15 articles ajoutés quotidiennement
-                </div>
-            </div>
-            <div class="login-window">
-                <div class="l-head">
-                    Créer un compte
-                </div>
-                <div class="l-form">
-                    <form method="post" action="">
-                        <div class="form-group">
-                            <label for="username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="username" name="username"
-                                   placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" name="email"
-                                   placeholder="exemple@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword1">Mot de passe</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1"
-                                   placeholder="**********" name="password">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputPassword2">Votre mot de passe à nouveau</label>
-                            <input type="password" class="form-control" id="exampleInputPassword2"
-                                   placeholder="**********" name="password-check">
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-7"><button type="submit" name="submit" class="btn btn-cv1">Valider
-                            </button></div>
-                            <div class="hidden-xs">
-                                <div class="col-lg-1 ortext">ou</div>
-                                <div class="col-lg-4 signuptext"><a href="login.html">Connexion</a></div>
-                            </div>
-                        </div>
-                        <div class="visible-xs text-center mt-30">
-                            <span class="signuptext"><a href="/login">Se connecter</a></span>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="container-fluid bg-light py-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+
+        <!-- Partie gauche : message marketing -->
+        <div class="col-lg-6 d-none d-lg-block text-center">
+            <h2 class="display-4 text-danger font-weight-bold">
+                Des <span class="text-dark">centaines</span><br>
+                <span class="text-dark">d'articles vous attendent</span>
+            </h2>
+            <p class="text-muted mt-3">Plus de 15 articles ajoutés quotidiennement</p>
         </div>
+
+        <!-- Partie droite : formulaire -->
+        <div class="col-lg-4 col-md-8 col-sm-10 bg-white p-4 shadow rounded">
+            <h3 class="mb-4">Créer un compte</h3>
+
+            <form method="post" action="">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="exemple@gmail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="**********" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password-check">Confirmer le mot de passe</label>
+                    <input type="password" class="form-control" id="password-check" name="password-check" placeholder="**********" required>
+                </div>
+
+                <button type="submit" name="submit" class="btn btn-danger btn-block">Valider</button>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted">Déjà inscrit ?</span>
+                    <a href="/login" class="ml-1">Connexion</a>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 {% endblock %}
