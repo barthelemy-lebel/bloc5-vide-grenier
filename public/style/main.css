@@ -1082,9 +1082,6 @@ video {
       .single-v-footer-switch > a.active span, .single-v-footer-switch > a.active i::before {
         color: #ea2c5a; }
 
-.cb-content {
-  width: 130% !important; }
-
 /*
 * Content Index END
 */
