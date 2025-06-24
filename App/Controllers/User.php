@@ -96,7 +96,26 @@ class User extends \Core\Controller
     }
 
     /**
-     * Déconnecte l'utilisateur et supprime les données
+     * Méthode privée d’enregistrement d’un nouvel utilisateur
+     */
+    private function register($data)
+    {
+        try {
+            $salt = Hash::generateSalt(32);
+
+            \App\Models\User::createUser([
+                "email" => $data['email'],
+                "username" => $data['username'],
+                "password" => Hash::generate($data['password'], $salt),
+                "salt" => $salt
+            ]);
+        } catch (Exception $ex) {
+            // TODO : gestion d'erreur
+        }
+    }
+
+    /**
+     * Déconnexion de l'utilisateur
      */
     public function logoutAction()
     {
@@ -123,7 +142,7 @@ class User extends \Core\Controller
     /**
      * Méthode privée : connecte l'utilisateur et gère "se souvenir de moi"
      */
-    private function login($data)
+    protected function login($data)
     {
         try {
             if (empty($data['email']) || empty($data['password'])) {
