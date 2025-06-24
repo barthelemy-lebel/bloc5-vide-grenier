@@ -12,54 +12,52 @@ use Exception;
 use http\Env\Request;
 use http\Exception\InvalidArgumentException;
 
-/**
- * User controller
- */
 class User extends \Core\Controller
 {
-
     /**
-     * Affiche la page de login
+     * ✅ Affiche la page de connexion et traite la soumission
      */
     public function loginAction()
     {
-        if(isset($_POST['submit'])){
+        $error = false; // Stocke une erreur éventuelle
+
+        if (isset($_POST['submit'])) {
             $f = $_POST;
 
-            // TODO: Validation
-
-            $this->login($f);
-
-            // Si login OK, redirige vers le compte
-            header('Location: /account');
+            // ✅ Tente la connexion
+            if ($this->login($f)) {
+                header('Location: /account');
+                exit;
+            } else {
+                $error = "Email ou mot de passe incorrect";
+            }
         }
 
-        View::renderTemplate('User/login.html');
+        // ✅ Passe l'erreur (s'il y en a) à la vue Twig
+        View::renderTemplate('User/login.html', ['error' => $error]);
     }
 
     /**
-     * Page de création de compte
+     * ✅ Affiche la page d'inscription
      */
     public function registerAction()
     {
-        if(isset($_POST['submit'])){
+        if (isset($_POST['submit'])) {
             $f = $_POST;
 
-            if($f['password'] !== $f['password-check']){
-                // TODO: Gestion d'erreur côté utilisateur
+            if ($f['password'] !== $f['password-check']) {
+                // TODO : gérer l'affichage d'une erreur utilisateur
             }
 
-            // validation
-
             $this->register($f);
-            // TODO: Rappeler la fonction de login pour connecter l'utilisateur
+            // TODO : appeler login() pour connecter directement
         }
 
         View::renderTemplate('User/register.html');
     }
 
     /**
-     * Affiche la page du compte
+     * ✅ Page du compte utilisateur
      */
     public function accountAction()
     {
@@ -70,78 +68,58 @@ class User extends \Core\Controller
         ]);
     }
 
-    /*
-     * Fonction privée pour enregister un utilisateur
+    /**
+     * ✅ Méthode privée d’enregistrement d’un nouvel utilisateur
      */
     private function register($data)
     {
         try {
-            // Generate a salt, which will be applied to the during the password
-            // hashing process.
             $salt = Hash::generateSalt(32);
 
-            $userID = \App\Models\User::createUser([
+            \App\Models\User::createUser([
                 "email" => $data['email'],
                 "username" => $data['username'],
                 "password" => Hash::generate($data['password'], $salt),
                 "salt" => $salt
             ]);
-
-            return $userID;
-
         } catch (Exception $ex) {
-            // TODO : Set flash if error : utiliser la fonction en dessous
-            /* Utility\Flash::danger($ex->getMessage());*/
+            // TODO : gestion d'erreur
         }
     }
 
-    private function login($data){
+    /**
+     * ✅ Méthode privée de connexion
+     */
+    private function login($data)
+    {
         try {
-            if(!isset($data['email'])){
-                throw new Exception('TODO');
+            if (!isset($data['email']) || !isset($data['password'])) {
+                throw new Exception("Champs manquants");
             }
 
             $user = \App\Models\User::getByLogin($data['email']);
 
-            if (Hash::generate($data['password'], $user['salt']) !== $user['password']) {
-                return false;
+            if (!$user || Hash::generate($data['password'], $user['salt']) !== $user['password']) {
+                return false; // Mauvais mot de passe ou utilisateur non trouvé
             }
 
-            // TODO: Create a remember me cookie if the user has selected the option
-            // to remained logged in on the login form.
-            // https://github.com/andrewdyer/php-mvc-register-login/blob/development/www/app/Model/UserLogin.php#L86
-
-            $_SESSION['user'] = array(
+            $_SESSION['user'] = [
                 'id' => $user['id'],
                 'username' => $user['username'],
-            );
+            ];
 
             return true;
-
         } catch (Exception $ex) {
-            // TODO : Set flash if error
-            /* Utility\Flash::danger($ex->getMessage());*/
+            return false;
         }
     }
 
-
     /**
-     * Logout: Delete cookie and session. Returns true if everything is okay,
-     * otherwise turns false.
-     * @access public
-     * @return boolean
-     * @since 1.0.2
+     * ✅ Déconnexion de l'utilisateur
      */
-    public function logoutAction() {
-
-        /*
-        if (isset($_COOKIE[$cookie])){
-            // TODO: Delete the users remember me cookie if one has been stored.
-            // https://github.com/andrewdyer/php-mvc-register-login/blob/development/www/app/Model/UserLogin.php#L148
-        }*/
-        // Destroy all data registered to the session.
-
-        $_SESSION = array();
+    public function logoutAction()
+    {
+        $_SESSION = [];
 
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -152,10 +130,7 @@ class User extends \Core\Controller
         }
 
         session_destroy();
-
-        header ("Location: /");
-
+        header("Location: /");
         return true;
     }
-
 }
