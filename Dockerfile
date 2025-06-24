@@ -1,33 +1,33 @@
 FROM php:8.2-apache
 
-# Install PHP extensions and dependencies
+# Installer dépendances système
 RUN apt-get update && apt-get install -y \
-    git unzip zip curl libpng-dev libonig-dev libxml2-dev \
-    npm nodejs \
-    && docker-php-ext-install pdo pdo_mysql
+    git unzip zip curl libpng-dev libonig-dev libxml2-dev libzip-dev npm nodejs \
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# Installer Node.js v18 (plus stable)
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Installer node-sass globalement
-RUN npm install -g node-sass
-
-# Active le module rewrite Apache
+# Activer mod_rewrite
 RUN a2enmod rewrite
 
-# Définir le dossier public comme DocumentRoot
+# Changer le DocumentRoot
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-# Modifier la config Apache pour le nouveau DocumentRoot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
 
 # Copier les fichiers du projet
-COPY . /var/www/html/
+COPY . /var/www/html
+WORKDIR /var/www/html
 
-# Fix des permissions pour éviter les erreurs 403
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+# Installer les dépendances PHP et JS
+RUN composer install \
+    && npm install \
+    && npm run build || node-sass public/scss/style.scss public/css/style.css || true
 
-# Compiler SCSS (optionnel)
-RUN node-sass public/scss/style.scss public/css/style.css || echo "Sass not found"
+# Donner les bons droits
+RUN chown -R www-data:www-data /var/www/html
+
+# Exposer le port Apache
+EXPOSE 80
 
 CMD ["apache2-foreground"]
